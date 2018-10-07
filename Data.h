@@ -20,7 +20,7 @@ typedef struct SNAKE
     int y;
     struct SNAKE *next;
 }Snake;
-Snake *head, *food, *q, *nexthead;
+Snake *head, *food, *q, *nexthead, *vhead, *vq, *vnexthead;
 
 void CursorPosition();
 void CreateMap();
@@ -36,10 +36,5 @@ void TotheWall();
 int BiteItSelf();
 void ChangeSpeed();
 void EatFoodorNot();
-void boardReset();
-void search();
-void boardRefresh();
-int wheregonext();
 void automove();
-
 #endif //SNAKE0_DATA_H

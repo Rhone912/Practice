@@ -4,14 +4,6 @@ int score=0,foodscore=10;
 int direction = 4;
 int speed=SPEED;
 int endgameflag=0;
-int fx[4]={0,0,-1,+1};
-int fy[4]={-1,+1,0,0};
-int map[MAP_WIDTH][MAP_LENGTH];
-int spm,spn,m,n,k;
-int saved_path[1000][1000];
-
-
-
 
 void ChangeSpeed()
 {
@@ -144,7 +136,6 @@ void SnakeMove()
         nexthead->y=head->y-1;
 
         EatFoodorNot();
-        boardRefresh();
     }
     if(direction==D)
     {
@@ -152,7 +143,6 @@ void SnakeMove()
         nexthead->y=head->y+1;
 
         EatFoodorNot();
-        boardRefresh();
     }
     if(direction==L)
     {
@@ -160,7 +150,6 @@ void SnakeMove()
         nexthead->y=head->y;
 
         EatFoodorNot();
-        boardRefresh();
     }
     if(direction==R)
     {
@@ -168,7 +157,6 @@ void SnakeMove()
         nexthead->y=head->y;
 
         EatFoodorNot();
-        boardRefresh();
     }
     if(BiteItSelf()==1)
     {
@@ -199,6 +187,8 @@ void GameControl()
     printf("每个食物价值10分。");
     CursorPosition(64, 15);
     printf("ESC ：退出游戏.SPACE：暂停游戏.");
+    CursorPosition(64,16);
+    printf("TAB : 自动游戏.");
     direction=R;
     for(;;)
     {
@@ -237,43 +227,6 @@ void GameControl()
         SnakeMove();
     }
 }
-void boardReset()
-{
-    int i,j;
-    for(i=0;i<MAP_WIDTH;i++)
-    {
-        for (j = 0; j < MAP_LENGTH; j++)
-        {
-            if (i == 0 || i == MAP_WIDTH || j == 0 || j == MAP_LENGTH)
-                map[i][j] = -1;
-            else
-                map[i][j] = 0;
-        }
-    }
-    void boardRefresh();
-}
-
-void boardRefresh()
-{
-    q = head->next;
-    while(q->next != NULL)
-    {
-        map[q->y][q->x] = -1;
-        q=q->next;
-    }
-    map[q->y][q->x] = -1;
-    map[food->y][food->x] = 1;
-}
-
-int check(int i,int j)
-{
-    int flag=1;
-    if(map[i][j] == -1)
-        flag = 0;
-    if(map[i][j] == 1)
-        flag = 2;
-    return flag;
-}
 
 int wheregonext
 (int hx, int hy, int fx, int fy)
@@ -282,28 +235,28 @@ int wheregonext
     int movable[4] = { U,L,D,R };
     int distance[4] = { 0 };
     distance[0] = abs(fx - hx) + abs(fy - (hy-1));
-    if (distance[0] <= min && (map[hx][hy - 1] == 0 || map[hx][hy - 1] == 1) && direction!=D) {
+    if (distance[0] <= min && (hy-1 != 0 || hy-1 == fy) && direction!=D) {
         min = distance[0];
         p = 0;
     }
     else
         min = min;
-    distance[1] = abs(fx - (hx - 1)) + abs(fy - hy);
-    if (distance[1] <= min && (map[hx - 1][hy] == 0 || map[hx - 1][hy] == 1) && direction!=R) {
+    distance[1] = abs(fx - (hx - 2)) + abs(fy - hy);
+    if (distance[1] <= min && (hx-2 != 0 || hx-2 == fx) && direction!=R) {
         min = distance[1];
         p = 1;
     }
     else
         min = min;
     distance[2] = abs(fx - hx) + abs(fy - (hy + 1));
-    if (distance[2] <= min && (map[hx][hy + 1] == 0 || map[hx][hy + 1] == 1) && direction!=U) {
+    if (distance[2] <= min && (hy+1 != 26 || hy+1 == fy) && direction!=U) {
         min = distance[2];
         p = 2;
     }
     else
         min = min;
-    distance[3] = abs(fx - (hx + 1)) + abs(fy - hy);
-    if (distance[3] <= min && (map[hx + 1][hy] == 0 || map[hx + 1][hy] == 1) && direction!=L) {
+    distance[3] = abs(fx - (hx + 2)) + abs(fy - hy);
+    if (distance[3] <= min && (hx+2 != 56 || hx+2 == fx) && direction!=L) {
         min = distance[3];
         p = 3;
     }

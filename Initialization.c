@@ -18,7 +18,7 @@ void hideCursor()
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
 }
 
-void Introduction()//开始界面
+void Introduction()
 {
     CursorPosition(40, 12);
 
@@ -31,7 +31,10 @@ void Introduction()//开始界面
     CursorPosition(25, 13);
     printf("增加分数的同时会增加游戏速度。\n");
     system("pause");
-    printf("进入游戏后按下空格可开始游戏，再次按下空格则游戏暂停。。\n");
+    system("cls");
+    CursorPosition(25, 12);
+    printf("进入游戏后按下空格可开始游戏，再次按下空格则游戏暂停。按下Tab自动游戏。\n");
+    system("pause");
     system("cls");
 }
 
@@ -72,7 +75,7 @@ void CreateSnake()
         head->y=5;
         tail=head;
     }
-    while(tail!=NULL)//从头到为，输出蛇身
+    while(tail!=NULL)
     {
         CursorPosition(tail->x, tail->y);
         printf("◆");
@@ -85,7 +88,6 @@ void GameInitialization()
     system("mode con cols=100 lines=27");
     Introduction();
     CreateMap();
-    boardReset();
     CreateSnake();
     CreateFood();
     hideCursor();
