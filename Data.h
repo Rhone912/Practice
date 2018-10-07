@@ -1,6 +1,5 @@
-#ifndef SNAKE1212_DATA_H
-#define SNAKE1212_DATA_H
-
+#ifndef SNAKE0_DATA_H
+#define SNAKE0_DATA_H
 #include <stdio.h>
 #include <time.h>
 #include <windows.h>
@@ -10,10 +9,10 @@
 #define SNAKE_LENGTH 5
 #define MAP_LENGTH 58
 #define MAP_WIDTH 26
-#define U 1
-#define D 2
-#define L 3
-#define R 4
+#define U 0
+#define D 1
+#define L 2
+#define R 3
 
 typedef struct SNAKE
 {
@@ -37,6 +36,10 @@ void TotheWall();
 int BiteItSelf();
 void ChangeSpeed();
 void EatFoodorNot();
+void boardReset();
+void search();
+void boardRefresh();
+int wheregonext();
+void automove();
 
-
-#endif //SNAKE1212_DATA_H
+#endif //SNAKE0_DATA_H

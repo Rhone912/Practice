@@ -35,6 +35,8 @@ void Introduction()//开始界面
     system("cls");
 }
 
+
+
 void CreateMap()
 {
     int i;
@@ -83,7 +85,9 @@ void GameInitialization()
     system("mode con cols=100 lines=27");
     Introduction();
     CreateMap();
+    boardReset();
     CreateSnake();
     CreateFood();
     hideCursor();
+
 }

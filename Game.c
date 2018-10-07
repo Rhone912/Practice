@@ -1,9 +1,17 @@
 #include "Data.h"
 
 int score=0,foodscore=10;
-int direction = 0;
+int direction = 4;
 int speed=SPEED;
 int endgameflag=0;
+int fx[4]={0,0,-1,+1};
+int fy[4]={-1,+1,0,0};
+int map[MAP_WIDTH][MAP_LENGTH];
+int spm,spn,m,n,k;
+int saved_path[1000][1000];
+
+
+
 
 void ChangeSpeed()
 {
@@ -134,13 +142,17 @@ void SnakeMove()
     {
         nexthead->x=head->x;
         nexthead->y=head->y-1;
+
         EatFoodorNot();
+        boardRefresh();
     }
     if(direction==D)
     {
         nexthead->x=head->x;
         nexthead->y=head->y+1;
+
         EatFoodorNot();
+        boardRefresh();
     }
     if(direction==L)
     {
@@ -148,6 +160,7 @@ void SnakeMove()
         nexthead->y=head->y;
 
         EatFoodorNot();
+        boardRefresh();
     }
     if(direction==R)
     {
@@ -155,6 +168,7 @@ void SnakeMove()
         nexthead->y=head->y;
 
         EatFoodorNot();
+        boardRefresh();
     }
     if(BiteItSelf()==1)
     {
@@ -215,12 +229,102 @@ void GameControl()
             endgameflag=3;
             break;
         }
+        else if(GetAsyncKeyState(VK_TAB))
+        {
+            automove();
+        }
         Sleep(speed);
         SnakeMove();
     }
 }
+void boardReset()
+{
+    int i,j;
+    for(i=0;i<MAP_WIDTH;i++)
+    {
+        for (j = 0; j < MAP_LENGTH; j++)
+        {
+            if (i == 0 || i == MAP_WIDTH || j == 0 || j == MAP_LENGTH)
+                map[i][j] = -1;
+            else
+                map[i][j] = 0;
+        }
+    }
+    void boardRefresh();
+}
+
+void boardRefresh()
+{
+    q = head->next;
+    while(q->next != NULL)
+    {
+        map[q->y][q->x] = -1;
+        q=q->next;
+    }
+    map[q->y][q->x] = -1;
+    map[food->y][food->x] = 1;
+}
+
+int check(int i,int j)
+{
+    int flag=1;
+    if(map[i][j] == -1)
+        flag = 0;
+    if(map[i][j] == 1)
+        flag = 2;
+    return flag;
+}
+
+int wheregonext
+(int hx, int hy, int fx, int fy)
+{
+    int p = 0, min = 100;
+    int movable[4] = { U,L,D,R };
+    int distance[4] = { 0 };
+    distance[0] = abs(fx - hx) + abs(fy - (hy-1));
+    if (distance[0] <= min && (map[hx][hy - 1] == 0 || map[hx][hy - 1] == 1)) {
+        min = distance[0];
+        p = 0;
+    }
+    else
+        min = min;
+    distance[1] = abs(fx - (hx - 1)) + abs(fy - hy);
+    if (distance[1] <= min && (map[hx - 1][hy] == 0 || map[hx - 1][hy] == 1)) {
+        min = distance[1];
+        p = 1;
+    }
+    else
+        min = min;
+    distance[2] = abs(fx - hx) + abs(fy - (hy + 1));
+    if (distance[2] <= min && (map[hx][hy + 1] == 0 || map[hx][hy + 1] == 1)) {
+        min = distance[2];
+        p = 2;
+    }
+    else
+        min = min;
+    distance[3] = abs(fx - (hx + 1)) + abs(fy - hy);
+    if (distance[3] <= min && (map[hx + 1][hy] == 0 || map[hx + 1][hy] == 1)) {
+        min = distance[3];
+        p = 3;
+    }
+    else
+        min = min;
+    return movable[p];
+}
 
 
+void automove()
+{
+    while(1)
+    {
+        direction = wheregonext(head->x,head->y,food->x,food->y);
+        Sleep(speed);
+        SnakeMove();
+        if(GetAsyncKeyState(VK_TAB))
+        {
+            break;
+        }
 
-
+    }
+}
 
