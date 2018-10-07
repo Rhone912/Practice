@@ -12,6 +12,12 @@ void CursorPosition(int x, int y)
     SetConsoleCursorPosition(hOutput,pos);
 }
 
+void hideCursor()
+{
+    CONSOLE_CURSOR_INFO cursor_info = { 1, 0 };
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
+}
+
 void Introduction()//开始界面
 {
     CursorPosition(40, 12);
@@ -74,9 +80,10 @@ void CreateSnake()
 
 void GameInitialization()
 {
-    system("mode con cols=100 lines=30");
+    system("mode con cols=100 lines=27");
     Introduction();
     CreateMap();
     CreateSnake();
     CreateFood();
+    hideCursor();
 }

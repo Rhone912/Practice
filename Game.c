@@ -1,21 +1,18 @@
 #include "Data.h"
 
-
-
 int score=0,foodscore=10;
 int direction = 0;
 int speed=SPEED;
-
 int endgameflag=0;
 
 void ChangeSpeed()
 {
     if(speed>=SPEED-50)
-        speed=SPEED-score/2;
+        speed-=foodscore/2;
     else if(speed>=SPEED-100)
-        speed=SPEED-score/4;
+        speed-=foodscore/4;
     else if(speed>=SPEED-150)
-        speed=SPEED-score/8;
+        speed-=foodscore/8;
     else if(speed<20)
         ;
 }
