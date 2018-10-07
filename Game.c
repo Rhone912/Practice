@@ -103,32 +103,29 @@ void End()
 
 void CreateFood()
 {
+    Snake* food_temp;
     srand((unsigned)time(NULL));
-    food=(Snake*)malloc(sizeof(Snake));
+    food_temp=(Snake*)malloc(sizeof(Snake));
     do
     {
-        food->x=rand()%(MAP_LENGTH-6)+4;
+        food_temp->x=rand()%(MAP_LENGTH-6)+4;
     }
-    while ((food->x%2)!=0);
-    food->y=rand()%(MAP_WIDTH-6)+4;
+    while ((food_temp->x%2)!=0);
+    food_temp->y=rand()%(MAP_WIDTH-6)+4;
     q=head;
     while(q->next != NULL)
     {
-        if(q->x==food->x && q->y==food->y)
+        if(q->x==food_temp->x && q->y==food_temp->y)
         {
-            free(food);
-            food = NULL;
+            free(food_temp);
             CreateFood();
             break;
         }
         q=q->next;
     }
-    if (food != NULL)
-    {
-        CursorPosition(food->x, food->y);
-        food=food;
-        printf("¡ñ");
-    }
+    CursorPosition(food_temp->x, food_temp->y);
+    food=food_temp;
+    printf("¡ñ");
 }
 
 void SnakeMove()
