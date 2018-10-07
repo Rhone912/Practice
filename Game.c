@@ -282,28 +282,28 @@ int wheregonext
     int movable[4] = { U,L,D,R };
     int distance[4] = { 0 };
     distance[0] = abs(fx - hx) + abs(fy - (hy-1));
-    if (distance[0] <= min && (map[hx][hy - 1] == 0 || map[hx][hy - 1] == 1)) {
+    if (distance[0] <= min && (map[hx][hy - 1] == 0 || map[hx][hy - 1] == 1) && direction!=D) {
         min = distance[0];
         p = 0;
     }
     else
         min = min;
     distance[1] = abs(fx - (hx - 1)) + abs(fy - hy);
-    if (distance[1] <= min && (map[hx - 1][hy] == 0 || map[hx - 1][hy] == 1)) {
+    if (distance[1] <= min && (map[hx - 1][hy] == 0 || map[hx - 1][hy] == 1) && direction!=R) {
         min = distance[1];
         p = 1;
     }
     else
         min = min;
     distance[2] = abs(fx - hx) + abs(fy - (hy + 1));
-    if (distance[2] <= min && (map[hx][hy + 1] == 0 || map[hx][hy + 1] == 1)) {
+    if (distance[2] <= min && (map[hx][hy + 1] == 0 || map[hx][hy + 1] == 1) && direction!=U) {
         min = distance[2];
         p = 2;
     }
     else
         min = min;
     distance[3] = abs(fx - (hx + 1)) + abs(fy - hy);
-    if (distance[3] <= min && (map[hx + 1][hy] == 0 || map[hx + 1][hy] == 1)) {
+    if (distance[3] <= min && (map[hx + 1][hy] == 0 || map[hx + 1][hy] == 1) && direction!=L) {
         min = distance[3];
         p = 3;
     }
