@@ -20,7 +20,7 @@ typedef struct SNAKE
     int y;
     struct SNAKE *next;
 }Snake;
-Snake *head, *food, *q, *nexthead, *vhead, *vq, *vnexthead;
+Snake *head, *food, *q, *nexthead;
 
 void CursorPosition();
 void CreateMap();

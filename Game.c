@@ -116,9 +116,15 @@ void CreateFood()
         {
             free(food_temp);
             CreateFood();
-            break;
+            return;
         }
         q=q->next;
+    }
+    if(q->x==food_temp->x && q->y==food_temp->y)
+    {
+        free(food_temp);
+        CreateFood();
+        return;
     }
     CursorPosition(food_temp->x, food_temp->y);
     food=food_temp;
@@ -127,6 +133,8 @@ void CreateFood()
 
 void SnakeMove()
 {
+    CursorPosition(64, 8);
+    printf("得分：%d  ",score);
     TotheWall();
 
     nexthead=(Snake*)malloc(sizeof(Snake));
@@ -192,8 +200,6 @@ void GameControl()
     direction=R;
     for(;;)
     {
-        CursorPosition(64, 8);
-        printf("得分：%d  ",score);
         if(GetAsyncKeyState(VK_UP) && direction!=D)
         {
             direction=U;
