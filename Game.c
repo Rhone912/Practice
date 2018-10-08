@@ -5,7 +5,7 @@ int direction = 4;
 int speed=SPEED;
 int endgameflag=0;
 
-void ChangeSpeed()
+void ChangeSpeed() // 改变速度
 {
     if(speed>=SPEED-50)
         speed-=foodscore/2;
@@ -16,7 +16,7 @@ void ChangeSpeed()
     else if(speed<20)
         ;
 }
-void EatFoodorNot()
+void EatFoodorNot() //判定是否吃食物
 {
     if(nexthead->x==food->x && nexthead->y==food->y)
     {
@@ -51,7 +51,7 @@ void EatFoodorNot()
     }
 }
 
-int BiteItSelf()
+int BiteItSelf() //判定是否咬到自己
 {
     Snake *self;
     self=head->next;
@@ -66,7 +66,7 @@ int BiteItSelf()
     return 0;
 }
 
-void TotheWall()
+void TotheWall() //判定是否撞墙
 {
     if(head->x==0 || head->x==56 ||head->y==0 || head->y==26)
     {
@@ -75,7 +75,7 @@ void TotheWall()
     }
 }
 
-void End()
+void End() //游戏结束
 {
 
     system("cls");
@@ -98,7 +98,7 @@ void End()
     exit(0);
 }
 
-void CreateFood()
+void CreateFood() //创建食物
 {
     Snake* food_temp;
     srand((unsigned)time(NULL));
@@ -110,33 +110,25 @@ void CreateFood()
     while ((food_temp->x%2)!=0);
     food_temp->y=rand()%(MAP_WIDTH-6)+4;
     q=head;
-    while(q->next != NULL)
+    while(q != NULL)
     {
         if(q->x==food_temp->x && q->y==food_temp->y)
         {
             free(food_temp);
             CreateFood();
-            return;
+            break;
         }
         q=q->next;
-    }
-    if(q->x==food_temp->x && q->y==food_temp->y)
-    {
-        free(food_temp);
-        CreateFood();
-        return;
     }
     CursorPosition(food_temp->x, food_temp->y);
     food=food_temp;
     printf("●");
 }
 
-void SnakeMove()
+void SnakeMove() //蛇移动
 {
     CursorPosition(64, 8);
     printf("得分：%d  ",score);
-    TotheWall();
-
     nexthead=(Snake*)malloc(sizeof(Snake));
     if(direction==U)
     {
@@ -171,10 +163,10 @@ void SnakeMove()
         endgameflag=2;
         End();
     }
-
+    TotheWall();
 }
 
-void Stop()
+void Stop() //游戏暂停
 {
     while(1)
     {
@@ -187,7 +179,7 @@ void Stop()
     }
 }
 
-void GameControl()
+void GameControl() //游戏控制
 {
     CursorPosition(64, 13);
     printf("用↑.↓.←.→分别控制蛇的移动.");
@@ -234,45 +226,36 @@ void GameControl()
     }
 }
 
-int wheregonext
+int wheregonext //简单自动判定下一步位置（会咬到自己）
 (int hx, int hy, int fx, int fy)
 {
-    int p = 0, min = 100;
-    int movable[4] = { U,L,D,R };
+    int p, min = 100;
     int distance[4] = { 0 };
     distance[0] = abs(fx - hx) + abs(fy - (hy-1));
     if (distance[0] <= min && (hy-1 != 0 || hy-1 == fy) && direction!=D) {
         min = distance[0];
-        p = 0;
+        p = U;
     }
-    else
-        min = min;
     distance[1] = abs(fx - (hx - 2)) + abs(fy - hy);
     if (distance[1] <= min && (hx-2 != 0 || hx-2 == fx) && direction!=R) {
         min = distance[1];
-        p = 1;
+        p = L;
     }
-    else
-        min = min;
     distance[2] = abs(fx - hx) + abs(fy - (hy + 1));
     if (distance[2] <= min && (hy+1 != 26 || hy+1 == fy) && direction!=U) {
         min = distance[2];
-        p = 2;
+        p = D;
     }
-    else
-        min = min;
     distance[3] = abs(fx - (hx + 2)) + abs(fy - hy);
     if (distance[3] <= min && (hx+2 != 56 || hx+2 == fx) && direction!=L) {
         min = distance[3];
-        p = 3;
+        p = R;
     }
-    else
-        min = min;
-    return movable[p];
+    return p;
 }
 
 
-void automove()
+void automove() //自动移动
 {
     while(1)
     {

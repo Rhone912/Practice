@@ -2,7 +2,7 @@
 
 
 
-void CursorPosition(int x, int y)
+void CursorPosition(int x, int y) //光标位置
 {
     COORD pos;
     HANDLE hOutput;
@@ -12,13 +12,13 @@ void CursorPosition(int x, int y)
     SetConsoleCursorPosition(hOutput,pos);
 }
 
-void hideCursor()
+void hideCursor() //隐藏光标
 {
     CONSOLE_CURSOR_INFO cursor_info = { 1, 0 };
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
 }
 
-void Introduction()
+void Introduction() // 进入游戏后的介绍
 {
     CursorPosition(40, 12);
 
@@ -40,7 +40,7 @@ void Introduction()
 
 
 
-void CreateMap()
+void CreateMap() //创建地图墙壁
 {
     int i;
     for(i=0;i<MAP_LENGTH+2;i+=2)
@@ -59,7 +59,7 @@ void CreateMap()
     }
 }
 
-void CreateSnake()
+void CreateSnake() //创建蛇体
 {
     Snake *tail;
     int i;
@@ -83,7 +83,7 @@ void CreateSnake()
     }
 }
 
-void GameInitialization()
+void GameInitialization() //游戏初始化
 {
     system("mode con cols=100 lines=27");
     Introduction();

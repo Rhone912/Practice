@@ -1,5 +1,6 @@
 #ifndef SNAKE0_DATA_H
 #define SNAKE0_DATA_H
+
 #include <stdio.h>
 #include <time.h>
 #include <windows.h>
@@ -37,4 +38,5 @@ int BiteItSelf();
 void ChangeSpeed();
 void EatFoodorNot();
 void automove();
+
 #endif //SNAKE0_DATA_H
