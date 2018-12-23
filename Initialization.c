@@ -41,15 +41,19 @@ void ChooseDifficulty(){
 
 }
 //开场菜单
-void Introduction() {
+int Introduction() {
     system("title 贪吃蛇");
     CursorPosition(20, 8);
     printf("主菜单");
     CursorPosition(16, 10);
     printf("1：选择难度");
     CursorPosition(16, 12);
+    printf("2: 读取存档");
+    CursorPosition(16, 14);
+    printf("3: 显示排名");
+    CursorPosition(16, 16);
     printf("Space:进入游戏");
-    int key,flag=0;
+    int key,flag=0,loadflag=0;
     while(((key =getch()) != VK_SPACE) && flag==0)
     {
         if(key == '1')
@@ -69,9 +73,11 @@ void Introduction() {
                 flag=0;
                 break;
             case 2:
+                LoadGame();
                 flag=0;
-                break;
+                return 1;
             case 3:
+                RankList();
                 flag=0;
                 break;
             case 4:
@@ -81,6 +87,7 @@ void Introduction() {
         Introduction();
     }
     system("cls");
+    return 0;
 }
 //创建地图
 void CreateMap(int mission) {
@@ -203,6 +210,7 @@ void GameInitialization(int mission) {
     CreateFood();
     CreateWeed();
     CreateMine();
+    CreateSmartWeed();
     hideCursor();
     begin_time=clock();
 }
@@ -213,5 +221,7 @@ void ClearGame(){
     ClearMap();
     ClearMine();
     ClearFood();
+    ClearSmartWeed();
     mission++;
 }
+

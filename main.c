@@ -3,10 +3,15 @@
 int main()
 {
    extern int mission;
-   int key;
-    Introduction();
+   int key,loadgameflag;
+    loadgameflag=Introduction();
     while(mission<=3){
-        GameInitialization(mission);
+        if(loadgameflag==0){
+            GameInitialization(mission);
+        }
+        else{
+            loadgameflag = 0;
+        }
         GameControl();
         system("cls");
         CursorPosition(13,20);

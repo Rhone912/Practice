@@ -1,7 +1,7 @@
 #include "Data.h"
 
 int score=0,foodscore=10;
-int direction = 4;
+int direction = R;
 int speed=SPEED;
 int endgameflag=0;
 int difficulty=1;
@@ -14,6 +14,7 @@ int min=10000;
 int dirs[10000];
 int res;
 int book[60][30]={0};
+int autotime = 0;
 
 //改变游戏速度
 void ChangeSpeed() {  //速度改变
@@ -37,12 +38,19 @@ void EatFoodorNot() { //移动后的判定
         snake_length++;
         while(q!=NULL){
             CursorPosition(q->x, q->y);
-            printf("◆");
+            if(autotime>0){
+                printf("\33[40;33m◆\033[0m");
+            }
+            else
+                printf("◆");
             q=q->next;
         }
         score=score+foodscore;
         ChangeSpeed();
         CreateFood();
+        if(autotime>0){
+            autotime--;
+        }
     }
     else if(isWeed(nexthead->x,nexthead->y)) { //吃到了毒草
         if(snake_length==1){
@@ -52,13 +60,21 @@ void EatFoodorNot() { //移动后的判定
         snake_length--;
         while(i<snake_length) {
             CursorPosition(q->x, q->y);
-            printf("◆");
+            if(autotime>0){
+                printf("\33[40;33m◆\033[0m");
+            }
+            else
+                printf("◆");
             q=q->next;
             i++;
         }
         if(i==1){
             CursorPosition(q->x, q->y);
-            printf("◆");
+            if(autotime>0){
+                printf("\33[40;33m◆\033[0m");
+            }
+            else
+                printf("◆");
         }
         CursorPosition(q->next->next->x, q->next->next->y);
         printf("  ");
@@ -68,6 +84,7 @@ void EatFoodorNot() { //移动后的判定
         printf("  ");
         free(q->next);
         q->next=NULL;
+        score-=20;
     }
     else if(isMine(nexthead->x,nexthead->y)){ //吃到了地雷
         if(snake_length==1){
@@ -78,19 +95,54 @@ void EatFoodorNot() { //移动后的判定
         while(i<snake_length)
         {
             CursorPosition(q->x, q->y);
-            printf("◆");
+            if(autotime>0){
+                printf("\33[40;33m◆\033[0m");
+            }
+            else
+                printf("◆");
             q=q->next;
             i++;
         }
         if(i==1){
             CursorPosition(q->x, q->y);
-            printf("◆");
+            if(autotime>0){
+                printf("\33[40;33m◆\033[0m");
+            }
+            else
+                printf("◆");
         }
         while(q!=NULL){
             CursorPosition(q->x, q->y);
             printf("  ");
             q=q->next;
         }
+        score-=50;
+    }
+    else if (isSweed(nexthead->x, nexthead->y)){ //吃到了智慧草
+        while(i<snake_length)
+        {
+            CursorPosition(q->x, q->y);
+            if(autotime>0){
+                printf("\33[40;33m◆\033[0m");
+            }
+            else
+                printf("◆");
+            q=q->next;
+            i++;
+        }
+        if(i==1) {
+            CursorPosition(q->x, q->y);
+            if(autotime>0){
+                printf("\33[40;33m◆\033[0m");
+            }
+            else
+                printf("◆");
+        }
+        CursorPosition(q->next->x, q->next->y);
+        printf("  ");
+        free(q->next);
+        q->next=NULL;
+        autotime+=2;
     }
     else if(isWall(nexthead->x,nexthead->y)==1){ //撞墙
         endgameflag=1;
@@ -104,13 +156,21 @@ void EatFoodorNot() { //移动后的判定
         while(i<snake_length)
         {
             CursorPosition(q->x, q->y);
-            printf("◆");
+            if(autotime>0){
+                printf("\33[40;33m◆\033[0m");
+            }
+            else
+                printf("◆");
             q=q->next;
             i++;
         }
         if(i==1){
             CursorPosition(q->x, q->y);
-            printf("◆");
+            if(autotime>0){
+                printf("\33[40;33m◆\033[0m");
+            }
+            else
+                printf("◆");
         }
         CursorPosition(q->next->x, q->next->y);
         printf("  ");
@@ -120,68 +180,82 @@ void EatFoodorNot() { //移动后的判定
 }
 
 //食物判定
-BOOL isFood(int x, int y) {
-    if(x == food->x && y == food->y)
-        return TRUE;
+int isFood(int x, int y) {
+    if(food!=NULL &&(x == food->x && y == food->y))
+        return 1;
     else
-        return FALSE;
+        return 0;
 }
 
 //毒草判定
-BOOL isWeed(int x, int y) {
+int isWeed(int x, int y) {
     for(int i=0; i<difficulty+1; i++)
     {
         if(weed[i] != NULL)
             if(x == weed[i]->x && y == weed[i]->y){
                 free(weed[i]);
                 weed[i]=NULL;
-                return TRUE;
+                return 1;
             }
     }
-    return FALSE;
+    return 0;
 }
 
 //地雷判定
-BOOL isMine(int x, int y){
+int isMine(int x, int y){
     for(int i=0; i<difficulty; i++)
     {
         if(mine[i] != NULL)
             if(x == mine[i]->x && y == mine[i]->y){
                 free(mine[i]);
                 mine[i]=NULL;
-                return TRUE;
+                return 1;
             }
     }
-    return FALSE;
+    return 0;
 }
 
 //蛇身判定
-BOOL isSnake(int x, int y) {
+int isSnake(int x, int y) {
     Snake *self;
     self=head->next;
     while(self!=NULL){
         if(self->x==x && self->y==y){
-            return TRUE;
+            return 1;
         }
         self=self->next;
     }
-    return FALSE;
+    return 0;
 }
 
 //墙体判定
-BOOL isWall(int x,int y) {
+int isWall(int x,int y) {
     for(int i=0;i<wallnum;i++){
         if(x==wall[i].x && y==wall[i].y) {
-                return TRUE;
+                return 1;
         }
     }
-    return FALSE;
+    return 0;
+}
+
+//智慧草判定
+int isSweed(int x, int y){
+    if(Sweed!=NULL &&(x==Sweed->x && y==Sweed->y)){
+        return 1;
+    }
+    return 0;
 }
 
 //排行榜
 void RankList(){
     FILE *fp;
     fp=fopen("rank", "rb");
+    if(fp==NULL){
+        CursorPosition(24,12);
+        printf("无排行榜文件");
+        system("pause");
+        return;
+    }
     Rank list[5];
     int i=1;
     Rank *buf=list;
@@ -196,6 +270,7 @@ void RankList(){
     CursorPosition(24, i+10);
     fclose(fp);
     system("pause");
+    system("cls");
 }
 
 //游戏结束
@@ -220,7 +295,7 @@ void End() {
     CursorPosition(24, 14);
     printf("玩家姓名（10字符以内）:");
     char name[11]={0};
-    gets(name);
+	scanf("%s", name);
     int i,j;
     FILE *fp;
     Rank listtemp[5];
@@ -258,47 +333,43 @@ void End() {
 
 //创建食物
 void CreateFood() {
-    Element* food_temp;
-    food_temp=(Element*)malloc(sizeof(Snake));
-    do {
-        food_temp->x=rand()%(MAP_LENGTH-mission*4-6)+4;
-    }
-    while ((food_temp->x%2)!=0);
-    food_temp->y=rand()%(MAP_WIDTH-mission*2-6)+4;
-    q=head;
-    int i;
-    if(isMine(food_temp->x, food_temp->y)){
-        free(food_temp);
-        CreateFood();
-        return;
-    }
-    for(int i=0;i<wallnum;i++){
-        if(food_temp->x==wall[i].x && food_temp->y==wall[i].y){
-            free(food_temp);
-            CreateFood();
-            return;
+    for(;;){
+        int flag=1;
+        Element* food_temp;
+        food_temp=(Element*)malloc(sizeof(Snake));
+        do {
+            food_temp->x=rand()%(MAP_LENGTH-mission*4-6)+4;
         }
-    }
-    for(i=0;i<difficulty+1;i++){
-        if(weed[i]!=NULL){
-            if(weed[i]->x==food->x &&weed[i]->y==food->y){
-                free(food_temp);
-                CreateFood();
-                return;
-            }
-        }
-    }
-    while(q != NULL) {
-        if((q->x==food_temp->x && q->y==food_temp->y)) {
+        while ((food_temp->x%2)!=0);
+        food_temp->y=rand()%(MAP_WIDTH-mission*2-6)+4;
+        q=head;
+        if(isMine(food_temp->x, food_temp->y)){
             free(food_temp);
-            CreateFood();
+            flag=0;
+        }
+        if(isWall(food_temp->x, food_temp->y)){
+            free(food_temp);
+            flag=0;
+        }
+        if(isWeed(food_temp->x, food_temp->y)){
+            free(food_temp);
+            flag=0;
+        }
+        if(isSnake(food_temp->x, food_temp->y)){
+            free(food_temp);
+            flag=0;
+        }
+        if(isSweed(food_temp->x, food_temp->y)){
+            free(food_temp);
+            flag=0;
+        }
+        if(flag==1){
+            CursorPosition(food_temp->x, food_temp->y);
+            food=food_temp;
+            printf("●");
             break;
         }
-        q=q->next;
     }
-    CursorPosition(food_temp->x, food_temp->y);
-    food=food_temp;
-    printf("●");
 }
 
 //清除食物
@@ -318,45 +389,15 @@ void CreateWeed() {
         case 1:
             weed[0]=perweed();
             weed[1]=perweed();
-            while(weed[1]->x==weed[0]->x && weed[1]->y==weed[0]->y)
-            {
-                free(weed[1]);
-                weed[1]=perweed();
-            }
         case 2:
             weed[0]=perweed();
             weed[1]=perweed();
-            while(weed[1]->x==weed[0]->x && weed[1]->y==weed[0]->y)
-            {
-                free(weed[1]);
-                weed[1]=perweed();
-            }
             weed[2]=perweed();
-            while((weed[2]->x==weed[0]->x && weed[2]->y==weed[0]->y) || (weed[2]->x==weed[1]->x && weed[2]->y==weed[1]->y))
-            {
-                free(weed[2]);
-                weed[2]=perweed();
-            }
         case 3:
             weed[0]=perweed();
             weed[1]=perweed();
-            while(weed[1]->x==weed[0]->x && weed[1]->y==weed[0]->y)
-            {
-                free(weed[1]);
-                weed[1]=perweed();
-            }
             weed[2]=perweed();
-            while((weed[2]->x==weed[0]->x && weed[2]->y==weed[0]->y) || (weed[2]->x==weed[1]->x && weed[2]->y==weed[1]->y))
-            {
-                free(weed[2]);
-                weed[2]=perweed();
-            }
             weed[3]=perweed();
-            while((weed[3]->x==weed[0]->x && weed[3]->y==weed[0]->y) || (weed[3]->x==weed[1]->x && weed[3]->y==weed[1]->y) || (weed[3]->x==weed[2]->x && weed[3]->y==weed[2]->y))
-            {
-                free(weed[3]);
-                weed[3]=perweed();
-            }
         default:break;
     }
     for(int i=0;i<difficulty+1;i++)
@@ -369,33 +410,38 @@ void CreateWeed() {
 
 //单个毒草创建
 Element* perweed(){
-    Element* weed_temp;
-    weed_temp=(Element*)malloc(sizeof(Element));
-    weed_temp->x=(rand()%(MAP_LENGTH/2-mission*4-6)+2)*2;
-    weed_temp->y=rand()%(MAP_WIDTH-mission*2-6)+4;
-    q=head;
-    if(weed_temp->x == food->x && weed_temp->y == food->y){
-        free(weed_temp);
-        return perweed();
-    }
-    if(isMine(weed_temp->x, weed_temp->y)){
-        free(weed_temp);
-        return perweed();
-    }
-    for(int i=0;i<wallnum;i++){
-        if(weed_temp->x==wall[i].x && weed_temp->y==wall[i].y){
+    for(;;){
+        int flag=1;
+        Element* weed_temp;
+        weed_temp=(Element*)malloc(sizeof(Element));
+        weed_temp->x=(rand()%(MAP_LENGTH/2-mission*4-6)+2)*2;
+        weed_temp->y=rand()%(MAP_WIDTH-mission*2-6)+4;
+        q=head;
+        if(isFood(weed_temp->x, weed_temp->y)){
             free(weed_temp);
-            return perweed();
+            flag=0;
+        }
+        if(isMine(weed_temp->x, weed_temp->y)){
+            free(weed_temp);
+            flag=0;
+        }
+        if(isWeed(weed_temp->x, weed_temp->y)){
+            free(weed_temp);
+            flag=0;
+        }
+        if(isSnake(weed_temp->x, weed_temp->y)){
+            free(weed_temp);
+            flag=0;
+        }
+        if(isSweed(weed_temp->x, weed_temp->y)){
+            free(weed_temp);
+            flag=0;
+        }
+        if(flag==1){
+            return weed_temp;
         }
     }
-    while(q != NULL) {
-        if((q->x==weed_temp->x && q->y==weed_temp->y)) {
-            free(weed_temp);
-            return perweed();
-        }
-        q=q->next;
-    }
-    return weed_temp;
+
 }
 
 //清除毒草
@@ -419,25 +465,10 @@ void CreateMine(){
         case 2:
             mine[0]=permine();
             mine[1]=permine();
-            while(mine[1]->x==mine[0]->x && mine[1]->y==mine[0]->y)
-            {
-                free(mine[1]);
-                mine[1]=permine();
-            }
         case 3:
             mine[0]=permine();
             mine[1]=permine();
-            while(mine[1]->x==mine[0]->x && mine[1]->y==mine[0]->y)
-            {
-                free(mine[1]);
-                mine[1]=permine();
-            }
             mine[2]=permine();
-            while((mine[2]->x==mine[0]->x && mine[2]->y==weed[0]->y) || (mine[2]->x==mine[1]->x && mine[2]->y==mine[1]->y))
-            {
-                free(mine[2]);
-                mine[2]=permine();
-            }
         default:break;
     }
     for(int i=0;i<difficulty;i++)
@@ -449,33 +480,37 @@ void CreateMine(){
 
 //单个地雷创建
 Element* permine(){
-    Element* mine_temp;
-    mine_temp=(Element*)malloc(sizeof(Element));
-    mine_temp->x=(rand()%(MAP_LENGTH/2-mission*4-6)+2)*2;
-    mine_temp->y=rand()%(MAP_WIDTH-mission*2-6)+4;
-    q=head;
-    if(mine_temp->x == food->x && mine_temp->y == food->y){
-        free(mine_temp);
-        return perweed();
-    }
-    if(isMine(mine_temp->x, mine_temp->y)){
-        free(mine_temp);
-        return perweed();
-    }
-    for(int i=0;i<wallnum;i++){
-        if(mine_temp->x==wall[i].x && mine_temp->y==wall[i].y){
+    for(;;){
+        int flag=1;
+        Element* mine_temp;
+        mine_temp=(Element*)malloc(sizeof(Element));
+        mine_temp->x=(rand()%(MAP_LENGTH/2-mission*4-6)+2)*2;
+        mine_temp->y=rand()%(MAP_WIDTH-mission*2-6)+4;
+        q=head;
+        if(isFood(mine_temp->x, mine_temp->y)){
             free(mine_temp);
-            return perweed();
+            flag=0;
+        }
+        if(isMine(mine_temp->x, mine_temp->y)){
+            free(mine_temp);
+            flag=0;
+        }
+        if(isWeed(mine_temp->x, mine_temp->y)){
+            free(mine_temp);
+            flag=0;
+        }
+        if(isSnake(mine_temp->x, mine_temp->y)){
+            free(mine_temp);
+            flag=0;
+        }
+        if(isSweed(mine_temp->x, mine_temp->y)){
+            free(mine_temp);
+            flag=0;
+        }
+        if(flag==1){
+            return mine_temp;
         }
     }
-    while(q != NULL) {
-        if((q->x==mine_temp->x && q->y==mine_temp->y)) {
-            free(mine_temp);
-            return perweed();
-        }
-        q=q->next;
-    }
-    return mine_temp;
 };
 //清除地雷
 void ClearMine(){
@@ -491,46 +526,48 @@ void ClearMine(){
 
 //智慧草的创建
 void CreateSmartWeed(){
-    if(Sweed!=NULL)
-        return;
-    Element* Sweed_temp=(Element*)malloc(sizeof(Element));
-    Sweed_temp->x=(rand()%(MAP_LENGTH/2-mission*4-6)+2)*2;
-    Sweed_temp->y=rand()%(MAP_WIDTH-mission*2-6)+4;
-    q=head;
-    int i;
-    for(i=0;i<wallnum;i++){
-        if(Sweed_temp->x==wall[i].x && Sweed_temp->y==wall[i].y){
+    for(;;){
+        int flag=1;
+        Element* Sweed_temp=(Element*)malloc(sizeof(Element));
+        Sweed_temp->x=(rand()%(MAP_LENGTH/2-mission*4-6)+2)*2;
+        Sweed_temp->y=rand()%(MAP_WIDTH-mission*2-6)+4;
+        q=head;
+        if(isWall(Sweed_temp->x, Sweed_temp->y)){
             free(Sweed_temp);
-            CreateSmartWeed();
-            return;
+            flag=0;
         }
-    }
-    for(i=0;i<difficulty+2;i++){
-        if(weed[i]!=NULL){
-            if(weed[i]->x==food->x &&weed[i]->y==food->y){
-                free(Sweed_temp);
-                CreateMine();
-                return;
-            }
-        }
-    }
-    if(Sweed_temp->x==food->x || Sweed_temp->x==food->y){
-        free(Sweed_temp);
-        CreateMine();
-        return;
-    }
-
-    while(q != NULL) {
-        if((q->x==Sweed_temp->x && q->y==Sweed_temp->y)) {
+        if(isWeed(Sweed_temp->x, Sweed_temp->y)){
             free(Sweed_temp);
-            CreateSmartWeed();
+            flag=0;
+        }
+        if(isSnake(Sweed_temp->x, Sweed_temp->y)){
+            free(Sweed_temp);
+            flag=0;
+        }
+        if(isFood(Sweed_temp->x, Sweed_temp->y)){
+            free(Sweed_temp);
+            flag=0;
+        }
+        if(isMine(Sweed_temp->x, Sweed_temp->y)){
+            free(Sweed_temp);
+            flag=0;
+        }
+        if(flag==1){
+            Sweed=Sweed_temp;
+            CursorPosition(Sweed->x,Sweed->y);
+            printf("\33[40;33m○\033[0m");
             break;
         }
-        q=q->next;
     }
-    Sweed=Sweed_temp;
-    CursorPosition(Sweed->x,Sweed->y);
-    printf("\33[40;33m○\033[0m");
+}
+
+void ClearSmartWeed(){
+    if(Sweed!=NULL){
+        CursorPosition(Sweed->x, Sweed->y);
+        printf("  ");
+        free(Sweed);
+        Sweed=NULL;
+    }
 }
 //蛇的移动处理
 int SnakeMove() {
@@ -603,9 +640,11 @@ void GameControl() {
     printf("ESC ：退出游戏.SPACE：暂停游戏.");
     CursorPosition(64,16);
     printf("TAB : 自动游戏.");
-    direction=R;
     for(;;) {
-        if(GetAsyncKeyState(VK_UP) && direction!=D) {
+        if(autotime>0){
+            Auto();
+        }
+        else if(GetAsyncKeyState(VK_UP) && direction!=D) {
             direction=U;
         }
         else if(GetAsyncKeyState(VK_DOWN) && direction!=U) {
@@ -622,11 +661,24 @@ void GameControl() {
         }
         else if(GetAsyncKeyState(VK_ESCAPE)) {
             endgameflag=3;
-            break;
-        }
-        else if(GetAsyncKeyState(VK_TAB)) {
-            if(Auto()==1)
-                return;
+            system("cls");
+            CursorPosition(20,14);
+            printf("游戏已结束，按下S可保存游戏，按下Q可退出游戏并记录分数。");
+            while(1){
+                if(getch() == 's'){
+                    SaveGame();
+                    CursorPosition(20,16);
+                    printf("游戏保存成功。");
+                    Sleep(500);
+                    system("pause");
+                    End();
+                    return;
+                }
+                else if(getch() == 'q'){
+                    End();
+                    return;
+                }
+            }
         }
         Sleep(speed);
         if(SnakeMove()==1){
@@ -660,39 +712,112 @@ void weed_flick(){
 
 //游戏存档
 void SaveGame(){
+    FILE* fp=fopen("save", "wb");
+    fwrite(&mission, sizeof(int), 1 ,fp);
+    fwrite(&direction, sizeof(int), 1 ,fp);
+    fwrite(&score, sizeof(int), 1, fp);
+    fwrite(&speed, sizeof(int), 1 ,fp);
+    fwrite(&difficulty, sizeof(int), 1 ,fp);
+    fwrite(&snake_length, sizeof(snake_length), 1, fp);
+    fwrite(food, sizeof(Element), 1, fp);
+    q=head;
+    while(q!=NULL){
+        fwrite(q, sizeof(Snake), 1, fp);
+        q=q->next;
+    }
+    for(int i=0; i<difficulty+1; i++){
+        if(weed[i]!=NULL)
+            fwrite(weed[i], sizeof(Element), 1, fp);
+    }
+    for(int i=0; i<difficulty; i++){
+        if(mine[i]!=NULL)
+            fwrite(mine[i], sizeof(Element), 1, fp);
+    }
+    if(Sweed!=NULL){
+        fwrite(Sweed, sizeof(Element), 1 ,fp);
+    }
+    fclose(fp);
+}
 
+int LoadGame(){
+    srand((unsigned)time(NULL));
+    system("mode con cols=100 lines=27");
+    system("cls");
+    FILE* fp=fopen("save", "rb");
+    fread(&mission, sizeof(int), 1, fp);
+    fread(&direction, sizeof(int), 1 ,fp);
+    fread(&score, sizeof(int), 1, fp);
+    fread(&speed, sizeof(int), 1 ,fp);
+    fread(&difficulty, sizeof(int), 1 ,fp);
+    fread(&snake_length, sizeof(int), 1, fp);
+    food=(Element*)malloc(sizeof(Element));
+    fread(food, sizeof(Element), 1, fp);
+    CreateMap(mission);
+    CursorPosition(food->x, food->y);
+    printf("●");
+    head=(Snake*)malloc(sizeof(Snake));
+    fread(head, sizeof(Snake), 1, fp);
+    CursorPosition(head->x, head->y);
+    printf("◆");
+    head->next=NULL;
+    head->prev=NULL;
+    Snake* p=head;
+    int i=1;
+    while(i<snake_length){
+        q=(Snake*)malloc(sizeof(Snake));
+        fread(q, sizeof(Snake), 1, fp);
+        CursorPosition(q->x, q->y);
+        printf("◆");
+        q->next=NULL;
+        p->next=q;
+        q->prev=p;
+        p=q;
+        i++;
+    }
+    for(int i=0; i<difficulty+1; i++){
+        weed[i]=(Element*)malloc(sizeof(Element));
+        fread(weed[i], sizeof(Element), 1, fp);
+        CursorPosition(weed[i]->x, weed[i]->y);
+        printf("○");
+    }
+    for(int i=0; i<difficulty; i++){
+        mine[i]=(Element*)malloc(sizeof(Element));
+        fread(mine[i], sizeof(Element), 1, fp);
+        CursorPosition(mine[i]->x, mine[i]->y);
+        printf("%c",'\001' );
+    }
+    Sweed=(Element*)malloc(sizeof(Element));
+    fread(Sweed, sizeof(Element), 1, fp);
+    CursorPosition(Sweed->x, Sweed->y);
+    printf("\33[40;33m○\033[0m");
+    hideCursor();
+    fclose(fp);
+    return 1;
 }
 
 //自动寻路算法
 
 int Auto() //自动移动
 {
-    for(;;){
-        min=10000;
-        AutoMove(head->x, head->y, 0);
-        direction = res;
-        Sleep(speed);
-        if(SnakeMove()==1){
-            return 1;
-        }
-        if(GetAsyncKeyState(VK_TAB))
-            break;
-    }
+    min=10000;
+    AutoMove(head->x, head->y, 0);
+    direction = res;
+	return 1;
 }
 
-BOOL isMovePossible (int x,int y, int direction)
+int isMovePossible (int x,int y, int direction)
 {
-    BOOL flag = FALSE;
+    int flag = 0;
     switch (direction) {
         case L:
-            if (!isWall(x-2,y)&&!isSnake(x-2,y)) flag = TRUE; break;
+            if (!isWall(x-2,y)&&!isSnake(x-2,y)) flag = 1; break;
         case R:
-            if (!isWall(x+2,y)&&!isSnake(x+2,y)) flag = TRUE; break;
+            if (!isWall(x+2,y)&&!isSnake(x+2,y)) flag = 1; break;
         case U:
-            if (!isWall(x,y-1)&&!isSnake(x,y-1)) flag = TRUE; break;
+            if (!isWall(x,y-1)&&!isSnake(x,y-1)) flag = 1; break;
         case D:
-            if (!isWall(x,y+1)&&!isSnake(x,y+1)) flag = TRUE; break;
-    }
+            if (!isWall(x,y+1)&&!isSnake(x,y+1)) flag = 1; break;
+}
     return flag;
 }
 
@@ -720,13 +845,6 @@ void boardReset ()
 void AutoMove(int x, int y, int steps){
     int move[4][2] ={{0,-1},{0,1},{-2,0},{2,0}};
     int nextx, nexty ,k=0,distance,minfornow=10000,shortcut;
-    if( x == food-> x && y == food->y ){
-        if( steps < min){
-            min = steps;
-            res = dirs[0];
-            return;
-        }
-    }
     for(k=U;k<=R;k++){
         nextx=x+move[k][0];
         nexty=y+move[k][1];
@@ -745,8 +863,5 @@ void AutoMove(int x, int y, int steps){
             shortcut = k;
         }
     }
-    if(steps==0){
-        dirs[0]=shortcut;
-    }
-    AutoMove( x+move[shortcut][0], y+move[shortcut][1], steps+1);
+    res=shortcut;
 }
