@@ -1,28 +1,32 @@
 #include "Data.h"
 
-int main()
-{
-   extern int mission;
-   int key,loadgameflag;
-    loadgameflag=Introduction();
-    while(mission<=3){
-        if(loadgameflag==0){
-            GameInitialization(mission);
-        }
-        else{
-            loadgameflag = 0;
-        }
-        GameControl();
-        system("cls");
-        CursorPosition(13,20);
-        printf("通过第%d关。按下A以继续下一关。",mission);
-        for(;;){
-            if((key=getch())=='a'){
-                break;
-            }
-        }
-        ClearGame();
-    }
+#pragma comment(linker, "/subsystem:/"windows/" /entry:/"mainCRTStartup/"" )
+extern int pausegameflag;
+extern int entergameflag;
+extern int loadflag;
+int window;
 
+int main(int argc, char *argv[])
+{
+    LoadOption();
+    if(loadflag==1){
+        LoadGame();
+    }
+    else
+        GameInitialization(mission);
+    //PlaySound("Music.wav",NULL,SND_SYNC | SND_LOOP|  SND_FILENAME);
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);
+    GLinit(700, 700);
+    glutInitWindowSize(700, 700);
+    glutInitWindowPosition(0, 0);
+    window=glutCreateWindow("贪吃蛇-游戏界面");
+    glutDisplayFunc(DrawGlScene);
+    glutIdleFunc(DrawGlScene);
+    glutReshapeFunc(ChangeSize);
+    glutKeyboardFunc(KeyPressed);
+    glutSpecialFunc(GameControl);
+    glutTimerFunc(40*(4-difficulty), OnTimer, pausegameflag);
+    glutMainLoop();
     return 0;
 }
